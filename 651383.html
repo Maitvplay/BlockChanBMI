@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain ตัวอย่าง</title>
+    <style>
+        /* Styles as provided in your original code */
+        body { font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            color: #333; }
+        .container { max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden; }
+        .form-container { 
+            margin-bottom: 20px;
+            text-align: center;}
+
+        .form-container h2 {
+            margin-bottom: 15px;
+            color: #4CAF50;
+            font-size: 24px;
+                }
+        .form-container input {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+                }
+
+        .form-container input:focus {
+                border-color: #4CAF50;
+                outline: none;
+            }
+
+        .form-container button {
+            padding: 12px 30px;
+            font-size: 18px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        /* Search section styles */
+        .search-container {
+            text-align: center;
+        }
+
+        .search-container input {
+            width: 70%;
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #45a049;
+        }
+
+        /* Blockchain section styles */
+        .blockchain-container {
+            margin-top: 20px;
+        }
+
+        .block {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .block h3 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 20px;
+        }
+
+        .block p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .block .hash {
+            font-family: 'Courier New', monospace;
+            word-wrap: break-word;
+            color: #888;
+        }
+        .search-container {
+            margin-top: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+        }
+        .search-container input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: 0.3s;
+        }
+        .search-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>กรอกข้อมูลเพื่อสร้าง Blockchain</h2>
+            <form id="personal-info-form">
+                <input type="text" id="name" placeholder="ชื่อ" required>
+                <input type="number" id="age" placeholder="อายุ" required>
+                <input type="number" id="weight" placeholder="น้ำหนัก (กก.)" required>
+                <input type="number" id="height" placeholder="ส่วนสูง (ซม.)" required>
+                <button type="submit">สร้างบล็อกใหม่</button>
+            </form>
+        </div>
+
+        <!-- Search Container -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="ค้นหาด้วย Hash หรือ ชื่อ">
+            <button id="search-button">ค้นหา</button>
+            <button id="clear-search">ล้างการค้นหา</button>
+        </div>
+
+        <div class="blockchain-container" id="blockchain-container">
+            <h3>Blockchain :</h3>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script>
+        // Blockchain Class
+        class Block {
+            constructor(index, data, previousHash = '') {
+                this.index = index;
+                this.timestamp = new Date().toISOString();
+                this.data = {
+                    ...data,
+                    BMI: this.calculateBMI(data.weight, data.height)
+                };
+                this.previousHash = previousHash;
+                this.hash = this.calculateHash();
+            }
+
+            calculateHash() {
+                return CryptoJS.SHA256(this.index + this.timestamp + JSON.stringify(this.data) + this.previousHash).toString();
+            }
+
+            calculateBMI(weight, height) {
+                if (!weight || !height) return null;
+                const heightInMeters = height / 100;
+                return (weight / (heightInMeters ** 2)).toFixed(2);
+            }
+        }
+
+        let blockchain = [];
+        let previousBlockHash = '';
+
+        // Event listener for adding blocks
+        document.getElementById("personal-info-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+            const weight = document.getElementById("weight").value;
+            const height = document.getElementById("height").value;
+
+            const newBlock = new Block(blockchain.length + 1, { name, age, weight, height }, previousBlockHash);
+            blockchain.push(newBlock);
+            previousBlockHash = newBlock.hash;
+
+            renderBlockchain();
+        });
+
+        // Event listener for searching
+        document.getElementById("search-button").addEventListener("click", function() {
+            const query = document.getElementById("search-input").value.toLowerCase();
+            searchBlockchain(query);
+        });
+
+        // Event listener for clearing search
+        document.getElementById("clear-search").addEventListener("click", function() {
+            document.getElementById("search-input").value = '';
+            renderBlockchain();
+        });
+
+        // Render Blockchain
+        function renderBlockchain(filteredBlocks = null) {
+            const blockchainContainer = document.getElementById("blockchain-container");
+            blockchainContainer.innerHTML = '<h3>Blockchain :</h3>';
+
+            const blocksToRender = filteredBlocks || blockchain;
+            blocksToRender.forEach(block => {
+                const blockElement = document.createElement("div");
+                blockElement.classList.add("block");
+
+                blockElement.innerHTML = `
+                    <h3>Block #${block.index}</h3>
+                    <p><strong>ข้อมูล:</strong> ${JSON.stringify(block.data)}</p>
+                    <p><strong>BMI:</strong> ${block.data.BMI}</p>
+                    <p><strong>Hash ปัจจุบัน:</strong> <span class="hash">${block.hash}</span></p>
+                    <p><strong>Hash ก่อนหน้า:</strong> <span class="hash">${block.previousHash || 'None'}</span></p>
+                `;
+
+                blockchainContainer.appendChild(blockElement);
+            });
+        }
+
+        // Search Blockchain
+        function searchBlockchain(query) {
+            const filteredBlocks = blockchain.filter(block => {
+                const name = block.data.name.toLowerCase();
+                const hash = block.hash.toLowerCase();
+                return name.includes(query) || hash.includes(query);
+            });
+
+            renderBlockchain(filteredBlocks);
+
+            if (filteredBlocks.length === 0) {
+                const blockchainContainer = document.getElementById("blockchain-container");
+                blockchainContainer.innerHTML += '<p>ไม่พบข้อมูลที่ค้นหา</p>';
+            }
+        }
+    </script>
+</body>
+</html>
